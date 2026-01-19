@@ -10,6 +10,11 @@ async function seed() {
   try {
     console.log('Starting database seeding...\n');
 
+    // Clear existing data (in reverse order of dependencies)
+    console.log('Clearing existing data...');
+    await client.query('TRUNCATE notifications, ratings, bids, jobs, users RESTART IDENTITY CASCADE');
+    console.log('✓ Existing data cleared\n');
+
     // Get role IDs
     const rolesResult = await client.query('SELECT id, name FROM roles');
     const roles = {};

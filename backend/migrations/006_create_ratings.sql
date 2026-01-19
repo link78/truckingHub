@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS ratings (
 );
 
 -- Create trigger for ratings table
+DROP TRIGGER IF EXISTS update_ratings_updated_at ON ratings;
 CREATE TRIGGER update_ratings_updated_at BEFORE UPDATE ON ratings
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -57,5 +58,6 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_user_rating_trigger ON ratings;
 CREATE TRIGGER update_user_rating_trigger AFTER INSERT OR UPDATE ON ratings
   FOR EACH ROW EXECUTE FUNCTION update_user_rating();

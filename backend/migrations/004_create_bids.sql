@@ -26,5 +26,6 @@ CREATE TABLE IF NOT EXISTS bids (
 );
 
 -- Create trigger for bids table
+DROP TRIGGER IF EXISTS update_bids_updated_at ON bids;
 CREATE TRIGGER update_bids_updated_at BEFORE UPDATE ON bids
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();

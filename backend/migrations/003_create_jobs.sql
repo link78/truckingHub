@@ -55,5 +55,6 @@ CREATE TABLE IF NOT EXISTS jobs (
 );
 
 -- Create trigger for jobs table
+DROP TRIGGER IF EXISTS update_jobs_updated_at ON jobs;
 CREATE TRIGGER update_jobs_updated_at BEFORE UPDATE ON jobs
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
