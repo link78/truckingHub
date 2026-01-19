@@ -154,10 +154,10 @@ class Notification {
     const query = `
       DELETE FROM notifications 
       WHERE is_read = TRUE 
-        AND read_at < CURRENT_TIMESTAMP - INTERVAL '${daysOld} days'
+        AND read_at < CURRENT_TIMESTAMP - INTERVAL $1
       RETURNING id
     `;
-    const result = await pool.query(query);
+    const result = await pool.query(query, [`${daysOld} days`]);
     return result.rows.length;
   }
 }
