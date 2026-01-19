@@ -13,9 +13,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware
+// In development, allow all origins. In production, restrict to ALLOWED_ORIGINS environment variable.
+// For multiple origins in production, set ALLOWED_ORIGINS to a single domain or implement
+// custom origin validation logic based on your deployment needs.
 app.use((req, res, next) => {
-  // TODO: In production, replace '*' with specific allowed origins from environment variable
-  // Example: const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
   const origin = process.env.NODE_ENV === 'production' 
     ? process.env.ALLOWED_ORIGINS || 'http://localhost:3000'
     : '*';

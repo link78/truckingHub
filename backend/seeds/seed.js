@@ -269,6 +269,7 @@ async function seed() {
     throw error;
   } finally {
     client.release();
+    // Close the connection pool - this is a standalone script that exits after completion
     await pool.end();
   }
 }
