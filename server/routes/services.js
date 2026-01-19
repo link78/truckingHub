@@ -12,12 +12,12 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getServices)
+  .get(getServices) // Public - anyone can browse services
   .post(protect, authorize('service_provider'), createService);
 
 router
   .route('/:id')
-  .get(getService)
+  .get(getService) // Public - anyone can view service details
   .put(protect, updateService)
   .delete(protect, deleteService);
 
