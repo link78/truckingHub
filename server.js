@@ -3,8 +3,8 @@ const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
 const cors = require('cors');
-const connectDB = require('./config/database');
-const errorHandler = require('./middleware/error');
+const connectDB = require('./server/config/database');
+const errorHandler = require('./server/middleware/error');
 
 // Connect to database
 connectDB();
@@ -76,12 +76,12 @@ io.on('connection', (socket) => {
 app.set('io', io);
 
 // Mount routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/jobs', require('./routes/jobs'));
-app.use('/api/ratings', require('./routes/ratings'));
-app.use('/api/transactions', require('./routes/transactions'));
-app.use('/api/services', require('./routes/services'));
-app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/auth', require('./server/routes/auth'));
+app.use('/api/jobs', require('./server/routes/jobs'));
+app.use('/api/ratings', require('./server/routes/ratings'));
+app.use('/api/transactions', require('./server/routes/transactions'));
+app.use('/api/services', require('./server/routes/services'));
+app.use('/api/notifications', require('./server/routes/notifications'));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

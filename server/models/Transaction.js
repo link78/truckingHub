@@ -56,7 +56,7 @@ const transactionSchema = new mongoose.Schema(
 // Generate unique transaction ID
 transactionSchema.pre('save', async function (next) {
   if (!this.transactionId) {
-    this.transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    this.transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
   }
   next();
 });
