@@ -5,6 +5,13 @@ const { authMiddleware } = require('../middleware/authMiddleware');
 const { validate } = require('../middleware/validationMiddleware');
 const { asyncHandler } = require('../middleware/errorHandler');
 const {
+  loginLimiter,
+  signupLimiter,
+  passwordChangeLimiter,
+  emailVerificationLimiter,
+  apiLimiter,
+} = require('../middleware/rateLimiter');
+const {
   signupSchema,
   loginSchema,
   updateProfileSchema,
@@ -26,6 +33,7 @@ const {
  */
 router.post(
   '/signup',
+  signupLimiter,
   validate(signupSchema),
   asyncHandler(authController.signup)
 );
@@ -37,6 +45,7 @@ router.post(
  */
 router.post(
   '/login',
+  loginLimiter,
   validate(loginSchema),
   asyncHandler(authController.login)
 );
@@ -48,6 +57,7 @@ router.post(
  */
 router.post(
   '/verify-email',
+  emailVerificationLimiter,
   validate(verifyEmailSchema),
   asyncHandler(authController.verifyEmail)
 );
@@ -61,6 +71,7 @@ router.post(
  */
 router.get(
   '/verify',
+  apiLimiter,
   authMiddleware,
   asyncHandler(authController.verifyToken)
 );
@@ -72,6 +83,7 @@ router.get(
  */
 router.post(
   '/logout',
+  apiLimiter,
   authMiddleware,
   asyncHandler(authController.logout)
 );
@@ -83,6 +95,7 @@ router.post(
  */
 router.post(
   '/refresh',
+  apiLimiter,
   authMiddleware,
   asyncHandler(authController.refreshToken)
 );
@@ -94,6 +107,7 @@ router.post(
  */
 router.get(
   '/me',
+  apiLimiter,
   authMiddleware,
   asyncHandler(authController.getCurrentUser)
 );
@@ -105,6 +119,7 @@ router.get(
  */
 router.put(
   '/profile',
+  apiLimiter,
   authMiddleware,
   validate(updateProfileSchema),
   asyncHandler(authController.updateProfile)
@@ -117,6 +132,7 @@ router.put(
  */
 router.post(
   '/change-password',
+  passwordChangeLimiter,
   authMiddleware,
   validate(changePasswordSchema),
   asyncHandler(authController.changePassword)
@@ -129,6 +145,7 @@ router.post(
  */
 router.post(
   '/send-verification-email',
+  emailVerificationLimiter,
   authMiddleware,
   asyncHandler(authController.sendVerificationEmail)
 );
