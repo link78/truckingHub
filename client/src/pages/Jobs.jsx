@@ -62,11 +62,11 @@ const Jobs = () => {
 
         <div className="card">
           <div className="mb-1">
-            <label style={{ marginRight: '1rem' }}>Filter by status:</label>
+            <label className="mr-1">Filter by status:</label>
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              style={{ padding: '0.5rem' }}
+              className="p-half"
             >
               <option value="all">All Jobs</option>
               <option value="available">Available</option>
@@ -100,7 +100,7 @@ const Jobs = () => {
                 </span>
               </div>
 
-              <div style={{ marginTop: '1rem' }}>
+              <div className="mt-1">
                 <p>
                   <strong>Route:</strong> {job.pickup.location} → {job.delivery.location}
                 </p>

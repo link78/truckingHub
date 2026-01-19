@@ -99,7 +99,7 @@ const JobDetails = () => {
           </div>
         )}
 
-        <div className="card" style={{ marginTop: '1rem' }}>
+        <div className="card mt-1">
           <div className="job-header">
             <h1>{job.title}</h1>
             <span className={`job-status status-${job.status}`}>
@@ -111,7 +111,7 @@ const JobDetails = () => {
           <p>{job.description}</p>
 
           <h3>Route Information</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="grid-2col">
             <div>
               <h4>Pickup</h4>
               <p><strong>Location:</strong> {job.pickup.location}</p>
@@ -222,7 +222,7 @@ const JobDetails = () => {
           <div className="card">
             <h2>Bids ({job.bids.length})</h2>
             {job.bids.map((bid, index) => (
-              <div key={index} style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
+              <div key={index} className="p-1 border-bottom">
                 <p><strong>Trucker:</strong> {bid.trucker?.name || 'Unknown'}</p>
                 <p><strong>Amount:</strong> ${bid.amount}</p>
                 {bid.message && <p><strong>Message:</strong> {bid.message}</p>}
@@ -237,7 +237,7 @@ const JobDetails = () => {
           <div className="card">
             <h2>Status History</h2>
             {job.statusHistory.map((history, index) => (
-              <div key={index} style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>
+              <div key={index} className="p-half border-bottom">
                 <p>
                   <strong>{history.status.replace('_', ' ')}</strong> -{' '}
                   {new Date(history.timestamp).toLocaleString()}

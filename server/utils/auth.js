@@ -1,20 +1,27 @@
 const jwt = require('jsonwebtoken');
 
+// Time unit constants (in milliseconds)
+const MS_PER_SECOND = 1000;
+const MS_PER_MINUTE = 60 * MS_PER_SECOND;
+const MS_PER_HOUR = 60 * MS_PER_MINUTE;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
+const DEFAULT_EXPIRY_DAYS = 7;
+
 // Convert JWT_EXPIRE to milliseconds for cookie
 // Expects format like '7d' from environment variable
 const getExpiryMilliseconds = (jwtExpire) => {
   const match = jwtExpire.match(/^(\d+)([dhms])$/);
-  if (!match) return 7 * 24 * 60 * 60 * 1000; // Default 7 days
+  if (!match) return DEFAULT_EXPIRY_DAYS * MS_PER_DAY;
   
   const value = parseInt(match[1]);
   const unit = match[2];
   
   switch (unit) {
-    case 'd': return value * 24 * 60 * 60 * 1000; // days
-    case 'h': return value * 60 * 60 * 1000;      // hours
-    case 'm': return value * 60 * 1000;            // minutes
-    case 's': return value * 1000;                 // seconds
-    default: return 7 * 24 * 60 * 60 * 1000;       // default 7 days
+    case 'd': return value * MS_PER_DAY;
+    case 'h': return value * MS_PER_HOUR;
+    case 'm': return value * MS_PER_MINUTE;
+    case 's': return value * MS_PER_SECOND;
+    default: return DEFAULT_EXPIRY_DAYS * MS_PER_DAY;
   }
 };
 

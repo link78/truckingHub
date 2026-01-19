@@ -253,7 +253,7 @@ const CreateJob = () => {
               </select>
             </div>
 
-            <div style={{ marginTop: '2rem' }}>
+            <div className="mt-2">
               <button type="submit" className="btn btn-primary">
                 Post Job
               </button>
