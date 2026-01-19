@@ -93,18 +93,10 @@ const verifyEmailSchema = Joi.object({
   }),
 });
 
-// Send verification email schema
-const sendVerificationEmailSchema = Joi.object({
-  email: Joi.string().email().messages({
-    'string.email': 'Please provide a valid email address',
-  }),
-});
-
 module.exports = {
   signupSchema,
   loginSchema,
   updateProfileSchema,
   changePasswordSchema,
   verifyEmailSchema,
-  sendVerificationEmailSchema,
 };
