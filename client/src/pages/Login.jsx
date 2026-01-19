@@ -49,7 +49,7 @@ const Login = () => {
             Login
           </button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <p className="text-center mt-1">
           Don't have an account? <Link to="/register">Register here</Link>
         </p>
       </div>

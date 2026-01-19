@@ -68,7 +68,7 @@ const Dashboard = () => {
       <Navbar />
       <div className="container">
         <h1>Welcome, {user.name}!</h1>
-        <p style={{ color: '#7f8c8d', marginBottom: '2rem' }}>
+        <p className="color-muted" style={{ marginBottom: '2rem' }}>
           Role: {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
         </p>
 

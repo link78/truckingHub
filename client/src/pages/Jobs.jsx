@@ -45,7 +45,7 @@ const Jobs = () => {
     <>
       <Navbar />
       <div className="container">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="flex-between">
           <h1>Available Jobs</h1>
           {(user.role === 'dispatcher' || user.role === 'shipper') && (
             <Link to="/jobs/create" className="btn btn-primary">
@@ -61,7 +61,7 @@ const Jobs = () => {
         )}
 
         <div className="card">
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="mb-1">
             <label style={{ marginRight: '1rem' }}>Filter by status:</label>
             <select
               value={filter}
@@ -126,7 +126,7 @@ const Jobs = () => {
                 )}
               </div>
 
-              <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+              <div className="flex-gap mt-1">
                 <Link to={`/jobs/${job._id}`} className="btn btn-primary">
                   View Details
                 </Link>

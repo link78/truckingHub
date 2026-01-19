@@ -345,3 +345,35 @@ body {
   color: #0c5460;
   border: 1px solid #bee5eb;
 }
+
+/* Utility Classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-1 {
+  margin-top: 1rem;
+}
+
+.mt-2 {
+  margin-top: 2rem;
+}
+
+.mb-1 {
+  margin-bottom: 1rem;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-gap {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.color-muted {
+  color: #7f8c8d;
+}

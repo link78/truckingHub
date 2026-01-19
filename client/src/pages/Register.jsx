@@ -98,7 +98,7 @@ const Register = () => {
             Register
           </button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: '1rem' }}>
+        <p className="text-center mt-1">
           Already have an account? <Link to="/login">Login here</Link>
         </p>
       </div>
