@@ -23,7 +23,7 @@ const Navbar = () => {
           )}
         </nav>
         <div>
-          <span style={{ marginRight: '1rem', color: 'white' }}>
+          <span className="navbar-user">
             {user?.name} ({user?.role})
           </span>
           <button onClick={handleLogout}>Logout</button>
