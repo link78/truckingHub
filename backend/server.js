@@ -36,6 +36,8 @@ app.use((req, res, next) => {
 });
 
 // Health check endpoint
+// Note: In production, consider adding rate limiting to prevent abuse
+// This can be done in Phase 2 with express-rate-limit middleware
 app.get('/health', async (req, res) => {
   try {
     // Check database connection
