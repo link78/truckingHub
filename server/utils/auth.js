@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 
+// JWT token expiration in days
+const TOKEN_EXPIRY_DAYS = 7;
+
 // Generate JWT token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -13,7 +16,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
   const options = {
     expires: new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+      Date.now() + TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
   };

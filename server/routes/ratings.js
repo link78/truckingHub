@@ -9,7 +9,7 @@ const { protect } = require('../middleware/auth');
 const router = express.Router();
 
 router.post('/', protect, createRating);
-router.get('/user/:userId', getUserRatings); // Public - anyone can view user ratings
-router.get('/job/:jobId', protect, getJobRatings); // Protected - only authenticated users can view job ratings
+router.get('/user/:userId', getUserRatings); // Public - marketplace transparency (consider adding privacy controls)
+router.get('/job/:jobId', protect, getJobRatings); // Protected - job participants only
 
 module.exports = router;

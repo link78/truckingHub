@@ -12,12 +12,12 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(getServices) // Public - anyone can browse services
+  .get(getServices) // Public - marketplace browsing (consider rate limiting in production)
   .post(protect, authorize('service_provider'), createService);
 
 router
   .route('/:id')
-  .get(getService) // Public - anyone can view service details
+  .get(getService) // Public - service details (consider rate limiting in production)
   .put(protect, updateService)
   .delete(protect, deleteService);
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 
 const transactionSchema = new mongoose.Schema(
   {
@@ -53,10 +54,11 @@ const transactionSchema = new mongoose.Schema(
   }
 );
 
-// Generate unique transaction ID
+// Generate secure unique transaction ID using crypto
 transactionSchema.pre('save', async function (next) {
   if (!this.transactionId) {
-    this.transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
+    const randomBytes = crypto.randomBytes(6).toString('hex').toUpperCase();
+    this.transactionId = `TXN-${Date.now()}-${randomBytes}`;
   }
   next();
 });

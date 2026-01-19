@@ -94,7 +94,7 @@ const Register = () => {
               onChange={handleChange}
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+          <button type="submit" className="btn btn-primary btn-full-width">
             Register
           </button>
         </form>
