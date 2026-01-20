@@ -292,6 +292,35 @@ After running `npm run seed`, you'll have:
 ## 🐛 Troubleshooting
 
 ### Database Connection Issues
+
+#### "client password must be a string" Error
+This error occurs when the `DB_PASSWORD` environment variable is not properly set:
+
+**Solution:**
+1. Make sure your `.env` file exists and has `DB_PASSWORD` set:
+   ```bash
+   # For password authentication
+   DB_PASSWORD=your_actual_password
+   ```
+
+2. If using peer/trust authentication (no password), you can either:
+   - Leave `DB_PASSWORD` unset in `.env`
+   - Or configure PostgreSQL to use peer authentication:
+     ```bash
+     # Edit pg_hba.conf to use 'trust' or 'peer' method
+     sudo nano /etc/postgresql/*/main/pg_hba.conf
+     # Restart PostgreSQL
+     sudo service postgresql restart
+     ```
+
+3. For local development without password, you can also set an empty password for postgres user:
+   ```bash
+   sudo -u postgres psql
+   ALTER USER postgres PASSWORD 'postgres';
+   \q
+   ```
+
+#### General Connection Issues
 ```bash
 # Check PostgreSQL is running
 pg_isready
