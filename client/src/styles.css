@@ -527,8 +527,23 @@ body {
   transition: background-color 0.2s;
 }
 
-.notification-item:hover {
+.notification-item.unread {
+  background-color: #e3f2fd;
+  border-left: 4px solid #2196f3;
+}
+
+.notification-item.read {
   background-color: #f8f9fa;
+  opacity: 0.8;
+}
+
+.notification-item:hover {
+  background-color: #e8f4f8;
+}
+
+.notification-item.read:hover {
+  background-color: #f0f0f0;
+  opacity: 1;
 }
 
 .notification-item strong {

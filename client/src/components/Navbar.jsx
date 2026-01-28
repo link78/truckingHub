@@ -100,6 +100,43 @@ const Navbar = () => {
     setShowNotifications(!showNotifications);
   };
 
+  const handleNotificationClick = async (notification) => {
+    try {
+      // Mark notification as read
+      const response = await fetch(`/api/notifications/${notification._id}/read`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        // Update local state
+        setNotifications((prev) => 
+          prev.map((n) => 
+            n._id === notification._id ? { ...n, isRead: true } : n
+          )
+        );
+        
+        // Decrease unread count if this notification was unread
+        if (!notification.isRead) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+
+        // Close dropdown
+        setShowNotifications(false);
+
+        // Navigate to related content based on notification type
+        if (notification.relatedJob) {
+          navigate(`/jobs/${notification.relatedJob._id || notification.relatedJob}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
   return (
     <div className="navbar">
       <div className="navbar-content">
@@ -143,7 +180,13 @@ const Navbar = () => {
                     <div className="notification-empty">No new notifications</div>
                   ) : (
                     notifications.slice(0, 5).map((notif, index) => (
-                      <div key={notif._id || index} className="notification-item">
+                      <div 
+                        key={notif._id || index} 
+                        className={`notification-item ${notif.isRead ? 'read' : 'unread'}`}
+                        onClick={() => handleNotificationClick(notif)}
+                        role="button"
+                        tabIndex={0}
+                      >
                         <strong>{notif.title}</strong>
                         <p>{notif.message}</p>
                         <small>{new Date(notif.createdAt).toLocaleString()}</small>
