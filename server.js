@@ -83,6 +83,13 @@ app.use('/api/transactions', require('./server/routes/transactions'));
 app.use('/api/services', require('./server/routes/services'));
 app.use('/api/notifications', require('./server/routes/notifications'));
 
+// Phase 2: Automation & Compliance routes
+app.use('/api/compliance', require('./server/routes/compliance'));
+app.use('/api/vehicles', require('./server/routes/vehicles'));
+app.use('/api/documents', require('./server/routes/documents'));
+app.use('/api/hos', require('./server/routes/hos'));
+app.use('/api/automation', require('./server/routes/automation'));
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
