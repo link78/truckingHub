@@ -383,14 +383,3 @@ async function executeAction(action, data, io) {
       return `Action type ${action.type} not implemented`;
   }
 }
-
-module.exports = {
-  getAutomationRules,
-  getAutomationRule,
-  createAutomationRule,
-  updateAutomationRule,
-  deleteAutomationRule,
-  toggleAutomationRule,
-  executeAutomationRule,
-  getAutomationStats,
-};
