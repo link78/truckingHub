@@ -104,19 +104,24 @@ exports.createJob = async (req, res) => {
 
     // Emit real-time notifications to all truckers
     if (io) {
-      truckers.forEach((trucker) => {
-        io.to(trucker._id.toString()).emit('newNotification', {
-          type: 'job_posted',
-          title: 'New Job Available',
-          message: `A new job "${job.title}" has been posted`,
-          relatedJob: job._id,
-          link: `/jobs/${job._id}`,
-          createdAt: new Date(),
+      try {
+        truckers.forEach((trucker) => {
+          io.to(trucker._id.toString()).emit('newNotification', {
+            type: 'job_posted',
+            title: 'New Job Available',
+            message: `A new job "${job.title}" has been posted`,
+            relatedJob: job._id,
+            link: `/jobs/${job._id}`,
+            createdAt: new Date(),
+          });
         });
-      });
 
-      // Broadcast new job posted event
-      io.emit('newJobPosted', { jobId: job._id, title: job.title });
+        // Broadcast new job posted event
+        io.emit('newJobPosted', { jobId: job._id, title: job.title });
+      } catch (socketError) {
+        console.error('Socket.IO emission error:', socketError);
+        // Don't fail the request if socket emission fails
+      }
     }
 
     res.status(201).json({
@@ -425,7 +430,7 @@ exports.placeBid = async (req, res) => {
     await Notification.create({
       recipient: job.postedBy,
       sender: req.user.id,
-      type: 'new_message',
+      type: 'bid_received',
       title: 'New Bid Received',
       message: `New bid of $${amount} received for "${job.title}"`,
       relatedJob: job._id,
@@ -435,7 +440,7 @@ exports.placeBid = async (req, res) => {
     // Emit real-time notification to job poster
     if (io) {
       io.to(job.postedBy.toString()).emit('newNotification', {
-        type: 'new_message',
+        type: 'bid_received',
         title: 'New Bid Received',
         message: `New bid of $${amount} received for "${job.title}"`,
         relatedJob: job._id,

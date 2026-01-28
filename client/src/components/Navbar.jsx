@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     // Fetch initial unread notification count
@@ -40,15 +41,30 @@ const Navbar = () => {
       // Listen for new notifications
       socket.on('newNotification', (notification) => {
         console.log('Received new notification:', notification);
-        setUnreadCount((prev) => prev + 1);
-        setNotifications((prev) => [notification, ...prev]);
         
-        // Show browser notification if permitted
-        if (Notification.permission === 'granted') {
-          new Notification(notification.title || 'New Notification', {
-            body: notification.message,
-            icon: '/favicon.ico',
-          });
+        // Validate notification data
+        if (notification && typeof notification === 'object') {
+          setUnreadCount((prev) => prev + 1);
+          
+          // Add to notifications list with defaults for missing fields
+          const validNotification = {
+            _id: notification._id || Date.now().toString(),
+            type: notification.type || 'info',
+            title: notification.title || 'Notification',
+            message: notification.message || '',
+            createdAt: notification.createdAt || new Date().toISOString(),
+            ...notification,
+          };
+          
+          setNotifications((prev) => [validNotification, ...prev]);
+          
+          // Show browser notification if permitted
+          if (Notification.permission === 'granted') {
+            new Notification(validNotification.title, {
+              body: validNotification.message,
+              icon: '/favicon.ico',
+            });
+          }
         }
       });
 
@@ -57,6 +73,23 @@ const Navbar = () => {
       };
     }
   }, [socket, isConnected]);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showNotifications]);
 
   const handleLogout = () => {
     logout();
@@ -85,7 +118,7 @@ const Navbar = () => {
           </div>
 
           {/* Notification bell */}
-          <div className="notification-container">
+          <div className="notification-container" ref={dropdownRef}>
             <button 
               className="notification-btn" 
               onClick={toggleNotifications}

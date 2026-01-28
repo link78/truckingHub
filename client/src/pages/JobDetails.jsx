@@ -86,14 +86,7 @@ const JobDetails = () => {
       setStatusNotes('');
       fetchJob();
       
-      // Emit socket event for real-time update
-      if (socket && isConnected) {
-        socket.emit('jobStatusUpdate', {
-          jobId: id,
-          status: newStatus,
-          updatedBy: user?.id,
-        });
-      }
+      // Note: Server already emits Socket.IO events, no need to emit from client
       
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
@@ -111,15 +104,7 @@ const JobDetails = () => {
       setBidMessage('');
       fetchJob();
       
-      // Emit socket event for new bid notification
-      if (socket && isConnected && job?.postedBy?._id) {
-        socket.emit('sendNotification', {
-          userId: job.postedBy._id,
-          title: 'New Bid Received',
-          message: `A new bid of $${bidAmount} was placed on your job`,
-          jobId: id,
-        });
-      }
+      // Note: Server already emits Socket.IO notifications, no need to emit from client
       
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
