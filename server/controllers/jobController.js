@@ -84,6 +84,9 @@ exports.createJob = async (req, res) => {
 
     const job = await Job.create(req.body);
 
+    // Get Socket.IO instance
+    const io = req.app.get('io');
+
     // Create notification for available truckers (simplified - in production, match based on criteria)
     const truckers = await User.find({ role: 'trucker', isActive: true });
     
@@ -98,6 +101,23 @@ exports.createJob = async (req, res) => {
     }));
 
     await Notification.insertMany(notifications);
+
+    // Emit real-time notifications to all truckers
+    if (io) {
+      truckers.forEach((trucker) => {
+        io.to(trucker._id.toString()).emit('newNotification', {
+          type: 'job_posted',
+          title: 'New Job Available',
+          message: `A new job "${job.title}" has been posted`,
+          relatedJob: job._id,
+          link: `/jobs/${job._id}`,
+          createdAt: new Date(),
+        });
+      });
+
+      // Broadcast new job posted event
+      io.emit('newJobPosted', { jobId: job._id, title: job.title });
+    }
 
     res.status(201).json({
       success: true,
@@ -217,6 +237,9 @@ exports.claimJob = async (req, res) => {
 
     await job.save();
 
+    // Get Socket.IO instance
+    const io = req.app.get('io');
+
     // Notify job poster
     await Notification.create({
       recipient: job.postedBy,
@@ -227,6 +250,25 @@ exports.claimJob = async (req, res) => {
       relatedJob: job._id,
       link: `/jobs/${job._id}`,
     });
+
+    // Emit real-time notification to job poster
+    if (io) {
+      io.to(job.postedBy.toString()).emit('newNotification', {
+        type: 'job_claimed',
+        title: 'Job Claimed',
+        message: `Your job "${job.title}" has been claimed`,
+        relatedJob: job._id,
+        link: `/jobs/${job._id}`,
+        createdAt: new Date(),
+      });
+
+      // Emit status update to job room
+      io.to(`job_${job._id}`).emit('statusUpdated', {
+        jobId: job._id.toString(),
+        status: 'claimed',
+        updatedBy: req.user.id,
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -278,6 +320,9 @@ exports.updateJobStatus = async (req, res) => {
 
     await job.save();
 
+    // Get Socket.IO instance
+    const io = req.app.get('io');
+
     // Notify relevant parties
     const notifyUsers = [job.postedBy];
     if (job.assignedTo && job.assignedTo.toString() !== req.user.id) {
@@ -295,6 +340,28 @@ exports.updateJobStatus = async (req, res) => {
     }));
 
     await Notification.insertMany(notifications);
+
+    // Emit real-time notifications and status updates
+    if (io) {
+      // Send notifications to relevant users
+      notifyUsers.forEach((userId) => {
+        io.to(userId.toString()).emit('newNotification', {
+          type: 'job_status_update',
+          title: 'Job Status Updated',
+          message: `Job "${job.title}" status updated to ${status}`,
+          relatedJob: job._id,
+          link: `/jobs/${job._id}`,
+          createdAt: new Date(),
+        });
+      });
+
+      // Emit status update to job room and broadcast
+      io.to(`job_${job._id}`).emit('statusUpdated', {
+        jobId: job._id.toString(),
+        status: status,
+        updatedBy: req.user.id,
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -351,6 +418,9 @@ exports.placeBid = async (req, res) => {
 
     await job.save();
 
+    // Get Socket.IO instance
+    const io = req.app.get('io');
+
     // Notify job poster
     await Notification.create({
       recipient: job.postedBy,
@@ -361,6 +431,25 @@ exports.placeBid = async (req, res) => {
       relatedJob: job._id,
       link: `/jobs/${job._id}`,
     });
+
+    // Emit real-time notification to job poster
+    if (io) {
+      io.to(job.postedBy.toString()).emit('newNotification', {
+        type: 'new_message',
+        title: 'New Bid Received',
+        message: `New bid of $${amount} received for "${job.title}"`,
+        relatedJob: job._id,
+        link: `/jobs/${job._id}`,
+        createdAt: new Date(),
+      });
+
+      // Emit new bid event to job room
+      io.to(`job_${job._id}`).emit('newBid', {
+        jobId: job._id.toString(),
+        amount,
+        trucker: req.user.id,
+      });
+    }
 
     res.status(200).json({
       success: true,

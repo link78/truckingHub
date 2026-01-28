@@ -2,11 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { AuthContext } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 import { getJob, updateJobStatus, placeBid } from '../services/jobService';
 
 const JobDetails = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
+  const { socket, isConnected, joinJobRoom, leaveJobRoom } = useSocket();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +20,50 @@ const JobDetails = () => {
 
   useEffect(() => {
     fetchJob();
-  }, [id]);
+    
+    // Join job room for real-time updates
+    if (id && isConnected) {
+      joinJobRoom(id);
+    }
+
+    // Cleanup: leave job room when component unmounts
+    return () => {
+      if (id && isConnected) {
+        leaveJobRoom(id);
+      }
+    };
+  }, [id, isConnected]);
+
+  useEffect(() => {
+    if (socket && isConnected) {
+      // Listen for real-time job status updates
+      socket.on('statusUpdated', (data) => {
+        console.log('Job status updated:', data);
+        if (data.jobId === id) {
+          // Refresh job data
+          fetchJob();
+          // Show notification
+          setMessage(`Job status updated to: ${data.status}`);
+          setTimeout(() => setMessage(''), 3000);
+        }
+      });
+
+      // Listen for new bids
+      socket.on('newBid', (data) => {
+        console.log('New bid received:', data);
+        if (data.jobId === id) {
+          fetchJob();
+          setMessage('A new bid has been placed');
+          setTimeout(() => setMessage(''), 3000);
+        }
+      });
+
+      return () => {
+        socket.off('statusUpdated');
+        socket.off('newBid');
+      };
+    }
+  }, [socket, isConnected, id]);
 
   const fetchJob = async () => {
     try {
@@ -40,6 +85,16 @@ const JobDetails = () => {
       setMessage('Status updated successfully!');
       setStatusNotes('');
       fetchJob();
+      
+      // Emit socket event for real-time update
+      if (socket && isConnected) {
+        socket.emit('jobStatusUpdate', {
+          jobId: id,
+          status: newStatus,
+          updatedBy: user?.id,
+        });
+      }
+      
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       setMessage(error.response?.data?.message || 'Failed to update status');
@@ -55,6 +110,17 @@ const JobDetails = () => {
       setBidAmount('');
       setBidMessage('');
       fetchJob();
+      
+      // Emit socket event for new bid notification
+      if (socket && isConnected && job?.postedBy?._id) {
+        socket.emit('sendNotification', {
+          userId: job.postedBy._id,
+          title: 'New Bid Received',
+          message: `A new bid of $${bidAmount} was placed on your job`,
+          jobId: id,
+        });
+      }
+      
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       setMessage(error.response?.data?.message || 'Failed to place bid');

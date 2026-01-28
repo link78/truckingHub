@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Navbar from '../components/Navbar';
 import { AuthContext } from '../context/AuthContext';
+import { useSocket } from '../context/SocketContext';
 import { getJobs } from '../services/jobService';
 import { getNotifications } from '../services/notificationService';
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
+  const { socket, isConnected } = useSocket();
   const [stats, setStats] = useState({
     totalJobs: 0,
     activeJobs: 0,
@@ -19,6 +21,34 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (socket && isConnected) {
+      // Listen for job status updates
+      socket.on('statusUpdated', () => {
+        console.log('Job status updated - refreshing dashboard');
+        fetchDashboardData();
+      });
+
+      // Listen for new job postings
+      socket.on('newJobPosted', () => {
+        console.log('New job posted - refreshing dashboard');
+        fetchDashboardData();
+      });
+
+      // Listen for new notifications
+      socket.on('newNotification', (notification) => {
+        console.log('New notification received on dashboard');
+        setNotifications((prev) => [notification, ...prev]);
+      });
+
+      return () => {
+        socket.off('statusUpdated');
+        socket.off('newJobPosted');
+        socket.off('newNotification');
+      };
+    }
+  }, [socket, isConnected]);
 
   const fetchDashboardData = async () => {
     try {
